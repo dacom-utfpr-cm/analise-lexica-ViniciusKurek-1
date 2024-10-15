@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Testes para a Análise Léxica",
-      "setup": "sudo -H pipx install pytest ply",
+      "setup": "sudo -H pipx install pytest python-ply",
       "run": "pytest -v",
       "input": "",
       "output": "",
