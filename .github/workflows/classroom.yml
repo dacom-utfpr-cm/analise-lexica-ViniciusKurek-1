@@ -14,3 +14,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: education/autograding@v1
+      - name: install pip
+        run: apt install pipx
