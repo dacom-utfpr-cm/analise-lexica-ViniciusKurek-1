@@ -4,6 +4,7 @@ from ply.lex import TOKEN
 import ply.lex as lex
 from sys import argv, exit
 from myerror import MyError
+import re
 
 import logging
 logging.basicConfig(
@@ -172,11 +173,12 @@ def define_column(input, lexpos):
 def t_error(token):
 
     # file = token.lexer.filename
-    line = token.lineno
-    column = define_column(token.lexer.lexdata, token.lexpos)
-    message = le.newError(check_key, 'ERR-LEX-INV-CHAR', token.lineno, column, valor=token.value[0])
+    #line = token.lineno
+    #column = define_column(token.lexer.lexdata, token.lexpos)
+    #message = le.newError(check_key, 'ERR-LEX-INV-CHAR', token.lineno, column, valor=token.value[0])
+    print("ERR-LEX-INV-CHAR")
     # print(f"[{file}]:[{line},{column}]: {message}.")
-    print(message)
+    #print(message)
 
     token.lexer.skip(1)
 
@@ -188,27 +190,30 @@ def main():
     global check_tpp
     global check_key
 
-    check_ttp = False
+    check_tpp = False
     check_key = False
-    
-    for idx, arg in enumerate(sys.argv):
-        # print("Argument #{} is {}".format(idx, arg))
-        aux = arg.split('.')
-        if aux[-1] == 'tpp':
-            check_tpp = True
-            idx_tpp = idx
+    check_file = False
 
-        if(arg == "-k"):
+    idx_tpp = -1
+    padrao_tpp = r"[\w\W]*\.tpp$" #arquivo com fim tpp
+    padrao_not_tpp = r"[\w\W]*\.[\w]+$" #arquivo not tpp != arquivo com fim not tpp
+
+    for idx, arg in enumerate(sys.argv[1:]):
+        if re.match(padrao_not_tpp, arg):
+            check_file = True
+            idx_tpp = idx + 1
+
+            if re.match(padrao_tpp, arg):
+                check_tpp = True
+
+        if arg == "-k":
             check_key = True
 
-    # print ("No. of arguments passed is ", len(sys.argv))
-
-    if(len(sys.argv) < 3):
+    if not check_file: 
         raise TypeError(le.newError(check_key, 'ERR-LEX-USE'))
-
-    if not check_tpp:
-      raise IOError(le.newError(check_key, 'ERR-LEX-NOT-TPP'))
-    elif not os.path.exists(argv[idx_tpp]):
+    elif not check_tpp: 
+        raise IOError(le.newError(check_key, 'ERR-LEX-NOT-TPP'))
+    elif not os.path.exists(argv[idx_tpp]): 
         raise IOError(le.newError(check_key, 'ERR-LEX-FILE-NOT-EXISTS'))
     else:
         data = open(argv[idx_tpp])
@@ -252,4 +257,3 @@ if __name__ == "__main__":
         print(e)
     except (ValueError, TypeError):
         print(e)
-

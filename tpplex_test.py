@@ -14,7 +14,7 @@ def execute_test(input_file, args):
     # Expected output:
     # ERR-LEX-USE
     # process = subprocess.Popen(['python', 'tpplex.py', args, path_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    cmd = "python tpplex.py {0} {1}".format(args, path_file)
+    cmd = "python3 tpplex.py {0} {1}".format(args, path_file)
     process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     
     stdout, stderr = process.communicate()
