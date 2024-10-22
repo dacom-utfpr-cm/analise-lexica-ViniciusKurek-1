@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Testes para a Análise Léxica",
-      "setup": "sudo -H pip3 install pytest ply",
+      "setup": "sudo -H pip install pytest ply",
       "run": "pytest -v",
       "input": "",
       "output": "",
