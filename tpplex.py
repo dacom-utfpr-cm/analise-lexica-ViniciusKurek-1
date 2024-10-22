@@ -68,7 +68,7 @@ reserved_words = {
 
 tokens = tokens + list(reserved_words.values())
 
-digito = r"([0-9])"
+digito = r"(\d)"
 letra = r"([a-zA-ZáÁãÃàÀéÉíÍóÓõÕ])"
 sinal = r"([\-\+]?)"
 
@@ -76,25 +76,31 @@ sinal = r"([\-\+]?)"
     id deve começar com uma letra
 """
 id = (
-    r"(" + letra + r"(" + digito + r"+|_|" + letra + r")*)"
-)  # o mesmo que '((letra)(letra|_|([0-9]))*)'
+    r"(letra).(letra|_|-|([0-9]))*" #ao menos uma letra garantida
+    #r"(" + letra + r"(" + digito + r"+|_|" + letra + r")*)"
+    # o mesmo que '((letra)(letra|_|([0-9]))*)'
+)    
+    
 
 # inteiro = r"(" + sinal + digito + r"+)"
 # inteiro = r"(" + digito + r"+)"
-inteiro = r"\d+"
+inteiro = r"digito+"
 
 flutuante = (
+    r"(([-\+]?)(digito)\.(digito))"
     # r"(" + digito + r"+\." + digito + r"+?)"
     # (([-\+]?)([0-9]+)\.([0-9]+))'
-    r'\d+[eE][-+]?\d+|(\.\d+|\d+\.\d*)([eE][-+]?\d+)?'
+    #r'\d+[eE][-+]?\d+|(\.\d+|\d+\.\d*)([eE][-+]?\d+)?'
     # r'[-+]?[0-9]+(\.([0-9]+)?)'
     #r'[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
     #r"(([-\+]?)([0-9]+)\.([0-9]+))"
 )
 
 notacao_cientifica = (
-    r"(" + sinal + r"([1-9])\." + digito + r"+[eE]" + sinal + digito + r"+)"
-)  # o mesmo que '(([-\+]?)([1-9])\.([0-9])+[eE]([-\+]?)([0-9]+))'
+    r"(([-\+]?)([1-9])\.(digito)+[eE^]([-\+]?)([digito]+))"
+    #r"(" + sinal + r"([1-9])\." + digito + r"+[eE]" + sinal + digito + r"+)"
+    # o mesmo que '(([-\+]?)([1-9])\.(digito)+[eE^]([-\+]?)([digito]+))'
+)
 
 # Expressões Regulaes para tokens simples.
 # Símbolos.
@@ -155,13 +161,15 @@ t_ignore = " \t"
 # t_COMENTARIO = r'(\{((.|\n)*?)\})'
 # para poder contar as quebras de linha dentro dos comentarios
 def t_COMENTARIO(token):
-    r"(\{((.|\n)*?)\})"
+    #r"(\{((.|\n)*?)\})"
+    r"(\{(\w\W)*?\})"
     token.lexer.lineno += token.value.count("\n")
     # return token
 
 
 def t_newline(token):
-    r"\n+"
+    r"\n"
+    #r"\n+"
     token.lexer.lineno += len(token.value)
 
 
@@ -172,13 +180,12 @@ def define_column(input, lexpos):
 
 def t_error(token):
 
-    # file = token.lexer.filename
-    #line = token.lineno
-    #column = define_column(token.lexer.lexdata, token.lexpos)
-    #message = le.newError(check_key, 'ERR-LEX-INV-CHAR', token.lineno, column, valor=token.value[0])
-    print("ERR-LEX-INV-CHAR")
-    # print(f"[{file}]:[{line},{column}]: {message}.")
-    #print(message)
+    #file = token.lexer.filename
+    line = token.lineno
+    column = define_column(token.lexer.lexdata, token.lexpos)
+    message = le.newError(check_key, 'ERR-LEX-INV-CHAR', token.lineno, column, valor=token.value[0])
+    #print(f"[{file}]:[{line},{column}]: {message}.")
+    print(message)
 
     token.lexer.skip(1)
 
